@@ -9,9 +9,9 @@
 .equ byte1, 0x1001 ; variable for address of first byte sent (for spi_send)
 .equ byte2, 0x1002 ; variable for address of second byte sent (for spi_send)
 
-.org 0x0000
+.org 0x0200
 
-byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 7 is CLK)
+byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 5 is CLK)
 
     set_clk_low: ; set the clock low before getting data in pin 7
         LDA outputKIM
@@ -53,3 +53,5 @@ byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 7 is 
     RTS ; end subroutine
 
 .org 0x2000 ; 
+
+; put data or whatever here
