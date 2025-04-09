@@ -12,7 +12,7 @@
 .org 0x0200
 
 main:
-    ; example code to display a 1 to the first digit of a MAX7219 7 segment display with SPI
+    ; example code to display a 1 to the rightmost digit of a MAX7219 7 segment display with SPI
     ; data sheet: https://www.analog.com/media/en/technical-documentation/data-sheets/max7219-max7221.pdf
     ; ideally you would put the setup and sending of address and data bytes in their own subroutines (which are like functions) to optimize process
 
