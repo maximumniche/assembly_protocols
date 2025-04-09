@@ -6,10 +6,61 @@
 
 .equ output, 0x1000 ; variable for address of output (for byte_send)
 
-.equ byte1, 0x1001 ; variable for address of first byte sent (for spi_send)
-.equ byte2, 0x1002 ; variable for address of second byte sent (for spi_send)
+.equ byte1, 0x1001 ; variable for address of display address byte
+.equ byte2, 0x1002 ; variable for address of display digit byte 
 
 .org 0x0200
+
+main:
+    ; example code to display a 1 to the first digit of a MAX7219 7 segment display with SPI
+    ; data sheet: https://www.analog.com/media/en/technical-documentation/data-sheets/max7219-max7221.pdf
+    ; ideally you would put the setup and sending of address and data bytes in their own subroutines (which are like functions) to optimize process
+
+    ; setup, need to send data to set decode mode, intensity, scan limit, and shutdown mode of MAX7219
+    setup:
+
+        ; send data to set decode mode to code B decode for all digits
+        LDA #0x09
+        STA output
+        JSR byte_send
+        LDA #0xFF
+        STA output
+        JSR byte_send
+
+        ; send data to set intensity to max
+        LDA #0x0A
+        STA output
+        JSR byte_send
+        LDA #0x0F
+        STA output
+
+
+        ; send data to set scan limit to all digits
+        LDA #0x0B
+        STA output
+        JSR byte_send
+        LDA #0x07
+        STA output
+        JSR byte_send
+
+        ; send data to set shutdown mode to OFF aka normal operation
+        LDA #0x0C
+        STA output
+        JSR byte_send
+        LDA #0x01
+        STA output
+        JSR byte_send
+
+    ; send data for number 1 to digit 0 of display in code B decode
+
+    LDA #0x01 ; address for digit 0
+    STA output
+    JSR byte_send
+    LDA #0x01 ; data byte for number 0
+    STA output
+    JSR byte_send
+
+
 
 byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 5 is CLK)
 
