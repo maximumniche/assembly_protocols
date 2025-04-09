@@ -1,4 +1,4 @@
-; Program for outline of code to do SPI
+; Program for outline of code to do MOSI SPI
 
 .cpu 6502
 .equ outputKIM, 0x1700 ; variable for address of SPI pins (where output will be sent from), bit 7 is MOSI, bit 6 is SS, bit 5 is SCLK
