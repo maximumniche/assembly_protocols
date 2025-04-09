@@ -34,7 +34,6 @@ main:
         LDA #0x0F
         STA output
 
-
         ; send data to set scan limit to all digits
         LDA #0x0B
         STA output
@@ -106,3 +105,4 @@ byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 5 is 
 .org 0x2000 ; 
 
 ; put data or whatever here
+; .include "file.txt" or something
