@@ -12,55 +12,56 @@
 .org 0x0200
 
 main:
-    ; example code to display a 1 to the rightmost digit of a MAX7219 7 segment display with SPI
-    ; data sheet: https://www.analog.com/media/en/technical-documentation/data-sheets/max7219-max7221.pdf
-    ; ideally you would put the setup and sending of address and data bytes in their own subroutines (which are like functions) to optimize process
+    ; example code to display a HELLO
+    ; data sheet: 
 
-    ; setup, need to send data to set decode mode, intensity, scan limit, and shutdown mode of MAX7219
-    setup:
+    JSR setup
 
-        ; send data to power on LCD
-        JSR send_FE
+    ; setup
+    set_up:
+
+        ; send data to turn on display
+        LDA #0xFE
+        JSR send_a
         LDA #0x41
-        STA output
-        JSR byte_send
+        JSR send_a
 
-        ; clear screen
-        JSR send_FE
+        ; send data to clear screen
+        LDA #0xFE
+        JSR send_a
         LDA #0x51
-        STA output
-        JSR byte_send
+        JSR send_a
 
+    ; send data for HELLO
+    send:
+    LDA #0x48
+    JSR send_a
 
-    ; send data for number 1 to digit 0 of display in code B decode
-    LDA #0b01001000
-    STA output
-    JSR byte_send
+    LDA #0x65
+    JSR send_a
 
-    LDA #0b01100101
-    STA output
-    JSR byte_send
+    LDA #0x6C
+    JSR send_a
 
-    LDA #0b01101100
-    STA output
-    JSR byte_send
+    LDA 0x6C
+    JSR send_a
 
-    LDA #0b01101100
-    STA output
-    JSR byte_send
+    LDA #0x6F
+    JSR send_a
 
-    LDA #0b01101111
-    STA output
-    JSR byte_send
+    JMP send
+
+    # 0x48 0x65 0x6C 0x6C 0x6F
+
     
-    ; 0b 01001000 01100101 01101100 01101100 01101111
+
 
 
 byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 5 is CLK)
 
-    set_clk_low: ; set the clock low before getting data in pin 7
+    set_clk_high: ; set the clock low before getting data in pin 7
         LDA outputKIM
-        AND #0b11011111   ; Pull CLK (bit 5) low
+        ORA #0b00100000   ; Pull CLK (bit 5) high
         STA outputKIM
     
     set_counter: ; counter to see how many bits have been sent of byte
@@ -97,8 +98,28 @@ byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 5 is 
         
     RTS ; end subroutine
 
-send_FE:
-    LDA #0xFE
+setup: ; setup subroutine
+
+    clear_decimal_mode:
+        CLD
+    
+    set_initial_output_state: ; set outputKIM to 0x00
+        LDA #0x00
+        STA outputKIM
+    
+    make_output: ; make port A an output
+        LDA #0xFF
+        STA outputSettings
+    
+    set_low: ; Pull SS and CLK pin high by ANDing with outputKIM and storing it back
+            LDA outputKIM
+            ORA #0b00100000  ; Pull CLK (bit 5) high
+            AND #0b10111111  ; Pull SS (bit 6) low
+            STA outputKIM
+            
+    RTS
+
+send_a:
     STA output
     JSR byte_send
     RTS

@@ -16,8 +16,10 @@ main:
     ; data sheet: https://www.analog.com/media/en/technical-documentation/data-sheets/max7219-max7221.pdf
     ; ideally you would put the setup and sending of address and data bytes in their own subroutines (which are like functions) to optimize process
 
+    JSR setup
+
     ; setup, need to send data to set decode mode, intensity, scan limit, and shutdown mode of MAX7219
-    setup:
+    set_up:
 
         ; send data to set decode mode to code B decode for all digits
         LDA #0x09
@@ -103,6 +105,28 @@ byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 5 is 
         BNE send_output ; jump to send_output for next bit
         
     RTS ; end subroutine
+
+setup: ; setup subroutine
+
+    clear_decimal_mode:
+        CLD
+    
+    set_initial_output_state: ; set outputKIM to 0x00
+        LDA #0x00
+        STA outputKIM
+    
+    make_output: ; make port A an output
+        LDA #0xFF
+        STA outputSettings
+    
+    set_low: ; Pull SS and CLK pin low by ANDing with outputKIM and storing it back
+            LDA outputKIM
+            AND #0b11011111  ; Pull CLK (bit 5) low
+            AND #0b10111111  ; Pull SS (bit 6) low
+            STA outputKIM
+            
+    RTS
+
 
 .org 0x2000 ; 
 
