@@ -32,12 +32,52 @@ main:
         LDA #0x51
         JSR send_a
 
+        JSR delay
+
+
     ; send data for HELLO
     send:
+
     LDA #0x48
     JSR send_a
 
-    JMP send
+    JSR delay
+
+    LDA #0x65
+    JSR send_a
+
+    JSR delay
+
+    LDA #0x6C
+    JSR send_a
+
+    JSR delay
+
+    LDA #0x6C
+    JSR send_a
+
+    JSR delay
+
+    LDA #0x6F
+    JSR send_a
+
+    JSR delay
+    
+    LDA #0xFE
+    JSR send_a
+    
+    JSR delay
+
+    LDA #0x4B
+    JSR send_a
+
+    LDA #0xFE
+    JSR send_a
+
+    LDA #0x56
+    JSR send_a
+
+    BRK
 
     # 0x1C
 
@@ -121,6 +161,22 @@ send_a:
     STA output
     JSR byte_send
     RTS
+
+delay: ; delay subroutine
+
+    LDX #0xFF ; Load X with outer loop count (e.g., 255)
+    outer_loop:
+    
+            LDA #0xFF
+            inner_loop:
+                SBC #0x01
+                BNE inner_loop
+            
+        DEX
+        BNE outer_loop
+        
+    RTS ; end subroutine
+
 
 .org 0x2000 ; 
 
