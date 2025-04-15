@@ -19,46 +19,41 @@ main:
     ; setup, need to send data to set decode mode, intensity, scan limit, and shutdown mode of MAX7219
     setup:
 
-        ; send data to set decode mode to code B decode for all digits
-        LDA #0x09
-        STA output
-        JSR byte_send
-        LDA #0xFF
-        STA output
-        JSR byte_send
-
-        ; send data to set intensity to max
-        LDA #0x0A
-        STA output
-        JSR byte_send
-        LDA #0x0F
-        STA output
-
-        ; send data to set scan limit to all digits
-        LDA #0x0B
-        STA output
-        JSR byte_send
-        LDA #0x07
+        ; send data to power on LCD
+        JSR send_FE
+        LDA #0x41
         STA output
         JSR byte_send
 
-        ; send data to set shutdown mode to OFF aka normal operation
-        LDA #0x0C
+        ; clear screen
+        JSR send_FE
+        LDA #0x51
         STA output
         JSR byte_send
-        LDA #0x01
-        STA output
-        JSR byte_send
+
 
     ; send data for number 1 to digit 0 of display in code B decode
-
-    LDA #0x01 ; address for digit 0
-    STA output
-    JSR byte_send
-    LDA #0x01 ; data byte for number 0
+    LDA #0b01001000
     STA output
     JSR byte_send
 
+    LDA #0b01100101
+    STA output
+    JSR byte_send
+
+    LDA #0b01101100
+    STA output
+    JSR byte_send
+
+    LDA #0b01101100
+    STA output
+    JSR byte_send
+
+    LDA #0b01101111
+    STA output
+    JSR byte_send
+    
+    ; 0b 01001000 01100101 01101100 01101100 01101111
 
 
 byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 5 is CLK)
@@ -101,6 +96,12 @@ byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 5 is 
         BNE send_output ; jump to send_output for next bit
         
     RTS ; end subroutine
+
+send_FE:
+    LDA #0xFE
+    STA output
+    JSR byte_send
+    RTS
 
 .org 0x2000 ; 
 
