@@ -37,27 +37,20 @@ main:
     LDA #0x48
     JSR send_a
 
-    LDA #0x65
-    JSR send_a
-
-    LDA #0x6C
-    JSR send_a
-
-    LDA 0x6C
-    JSR send_a
-
-    LDA #0x6F
-    JSR send_a
-
     JMP send
 
-    # 0x48 0x65 0x6C 0x6C 0x6F
+    # 0x1C
 
     
 
 
 
 byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 5 is CLK)
+
+    set_cs_low:
+        LDA outputKIM
+        AND #0b10111111  ; Pull SS (bit 6) low
+        STA outputKIM
 
     set_clk_high: ; set the clock low before getting data in pin 7
         LDA outputKIM
@@ -95,6 +88,11 @@ byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 5 is 
         DEX ; decrement number of bits remaining to be sent
         
         BNE send_output ; jump to send_output for next bit
+
+    set_cs_high:
+        LDA outputKIM
+        ORA #0b01000000  ; Pull SS (bit 6) high
+        STA outputKIM
         
     RTS ; end subroutine
 
@@ -111,7 +109,7 @@ setup: ; setup subroutine
         LDA #0xFF
         STA outputSettings
     
-    set_low: ; Pull SS and CLK pin high by ANDing with outputKIM and storing it back
+    set_low: ; Pull SS low and CLK pin high by ANDing with outputKIM and storing it back
             LDA outputKIM
             ORA #0b00100000  ; Pull CLK (bit 5) high
             AND #0b10111111  ; Pull SS (bit 6) low
