@@ -59,8 +59,6 @@ main:
     STA output
     JSR byte_send
 
-    BRK ; end program
-
 
 
 byte_send: ; subroutine to send 8 bits (bit 7 is data, bit 6 is CS/SS, bit 5 is CLK)
